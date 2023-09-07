@@ -1,31 +1,34 @@
 // Lower level API to animate any kind of svg path
 
-var shifty = require('shifty');
-var utils = require('./utils');
+var shifty = require("shifty");
+var utils = require("./utils");
 
 var Tweenable = shifty.Tweenable;
 
 var EASING_ALIASES = {
-    easeIn: 'easeInCubic',
-    easeOut: 'easeOutCubic',
-    easeInOut: 'easeInOutCubic'
+    easeIn: "easeInCubic",
+    easeOut: "easeOutCubic",
+    easeInOut: "easeInOutCubic",
 };
 
 var Path = function Path(path, opts) {
     // Throw a better error if not initialized with `new` keyword
     if (!(this instanceof Path)) {
-        throw new Error('Constructor was called without new keyword');
+        throw new Error("Constructor was called without new keyword");
     }
 
     // Default parameters for animation
-    opts = utils.extend({
-        delay: 0,
-        duration: 800,
-        easing: 'linear',
-        from: {},
-        to: {},
-        step: function() {}
-    }, opts);
+    opts = utils.extend(
+        {
+            delay: 0,
+            duration: 800,
+            easing: "linear",
+            from: Object.create(null),
+            to: Object.create(null),
+            step: function () {},
+        },
+        opts
+    );
 
     var element;
     if (utils.isString(path)) {
@@ -41,7 +44,7 @@ var Path = function Path(path, opts) {
 
     // Set up the starting positions
     var length = this.path.getTotalLength();
-    this.path.style.strokeDasharray = length + ' ' + length;
+    this.path.style.strokeDasharray = length + " " + length;
     this.set(0);
 };
 
@@ -77,17 +80,17 @@ Path.prototype.stop = function stop() {
 // Method introduced here:
 // http://jakearchibald.com/2013/animated-line-drawing-svg/
 Path.prototype.animate = function animate(progress, opts, cb) {
-    opts = opts || {};
+    opts = opts || Object.create(null);
 
     if (utils.isFunction(opts)) {
         cb = opts;
-        opts = {};
+        opts = Object.create(null);
     }
 
-    var passedOpts = utils.extend({}, opts);
+    var passedOpts = utils.extend(Object.create(null), opts);
 
     // Copy default opts to new object so defaults are not modified
-    var defaultOpts = utils.extend({}, this._opts);
+    var defaultOpts = utils.extend(Object.create(null), this._opts);
     opts = utils.extend(defaultOpts, opts);
 
     var shiftyEasing = this._easing(opts.easing);
@@ -104,30 +107,33 @@ Path.prototype.animate = function animate(progress, opts, cb) {
 
     var self = this;
     this._tweenable = new Tweenable();
-    this._tweenable.tween({
-        from: utils.extend({ offset: offset }, values.from),
-        to: utils.extend({ offset: newOffset }, values.to),
-        duration: opts.duration,
-        delay: opts.delay,
-        easing: shiftyEasing,
-        step: function(state) {
-            self.path.style.strokeDashoffset = state.offset;
-            var reference = opts.shape || self;
-            opts.step(state, reference, opts.attachment);
-        }
-    }).then(function(state) {
-        if (utils.isFunction(cb)) {
-            cb();
-        }
-    }).catch(function(err) {
-        console.error('Error in tweening:', err);
-        throw err;
-    });
+    this._tweenable
+        .tween({
+            from: utils.extend({ offset: offset }, values.from),
+            to: utils.extend({ offset: newOffset }, values.to),
+            duration: opts.duration,
+            delay: opts.delay,
+            easing: shiftyEasing,
+            step: function (state) {
+                self.path.style.strokeDashoffset = state.offset;
+                var reference = opts.shape || self;
+                opts.step(state, reference, opts.attachment);
+            },
+        })
+        .then(function (state) {
+            if (utils.isFunction(cb)) {
+                cb();
+            }
+        })
+        .catch(function (err) {
+            console.error("Error in tweening:", err);
+            throw err;
+        });
 };
 
 Path.prototype._getComputedDashOffset = function _getComputedDashOffset() {
     var computedStyle = window.getComputedStyle(this.path, null);
-    return parseFloat(computedStyle.getPropertyValue('stroke-dashoffset'), 10);
+    return parseFloat(computedStyle.getPropertyValue("stroke-dashoffset"), 10);
 };
 
 Path.prototype._progressToOffset = function _progressToOffset(progress) {
@@ -136,23 +142,32 @@ Path.prototype._progressToOffset = function _progressToOffset(progress) {
 };
 
 // Resolves from and to values for animation.
-Path.prototype._resolveFromAndTo = function _resolveFromAndTo(progress, easing, opts) {
+Path.prototype._resolveFromAndTo = function _resolveFromAndTo(
+    progress,
+    easing,
+    opts
+) {
     if (opts.from && opts.to) {
         return {
             from: opts.from,
-            to: opts.to
+            to: opts.to,
         };
     }
 
     return {
         from: this._calculateFrom(easing),
-        to: this._calculateTo(progress, easing)
+        to: this._calculateTo(progress, easing),
     };
 };
 
 // Calculate `from` values from options passed at initialization
 Path.prototype._calculateFrom = function _calculateFrom(easing) {
-    return shifty.interpolate(this._opts.from, this._opts.to, this.value(), easing);
+    return shifty.interpolate(
+        this._opts.from,
+        this._opts.to,
+        this.value(),
+        easing
+    );
 };
 
 // Calculate `to` values from options passed at initialization

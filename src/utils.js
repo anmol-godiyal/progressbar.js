@@ -1,26 +1,26 @@
 // Utility functions
 
-var PREFIXES = 'Webkit Moz O ms'.split(' ');
+var PREFIXES = "Webkit Moz O ms".split(" ");
 var FLOAT_COMPARISON_EPSILON = 0.001;
 
 // Copy all attributes from source object to destination object.
 // destination object is mutated.
 function extend(destination, source, recursive) {
-    destination = destination || {};
-    source = source || {};
+    destination = destination || Object.create(null);
+    source = source || Object.create(null);
     recursive = recursive || false;
 
-    for (var attrName in source) {
-        if (source.hasOwnProperty(attrName)) {
-            var destVal = destination[attrName];
-            var sourceVal = source[attrName];
+    Object.keys(source).forEach(function (key) {
+        if (source.hasOwnProperty(key)) {
+            var destVal = destination[key];
+            var sourceVal = source[key];
             if (recursive && isObject(destVal) && isObject(sourceVal)) {
-                destination[attrName] = extend(destVal, sourceVal, recursive);
+                destination[key] = extend(destVal, sourceVal, recursive);
             } else {
-                destination[attrName] = sourceVal;
+                destination[key] = sourceVal;
             }
         }
-    }
+    });
 
     return destination;
 }
@@ -36,8 +36,8 @@ function render(template, vars) {
     for (var key in vars) {
         if (vars.hasOwnProperty(key)) {
             var val = vars[key];
-            var regExpString = '\\{' + key + '\\}';
-            var regExp = new RegExp(regExpString, 'g');
+            var regExpString = "\\{" + key + "\\}";
+            var regExp = new RegExp(regExpString, "g");
 
             rendered = rendered.replace(regExp, val);
         }
@@ -47,7 +47,7 @@ function render(template, vars) {
 }
 
 function setStyle(element, style, value) {
-    var elStyle = element.style;  // cache for performance
+    var elStyle = element.style; // cache for performance
 
     for (var i = 0; i < PREFIXES.length; ++i) {
         var prefix = PREFIXES[i];
@@ -58,7 +58,7 @@ function setStyle(element, style, value) {
 }
 
 function setStyles(element, styles) {
-    forEachObject(styles, function(styleValue, styleName) {
+    forEachObject(styles, function (styleValue, styleName) {
         // Allow disabling some individual styles by setting them
         // to null or undefined
         if (styleValue === null || styleValue === undefined) {
@@ -80,15 +80,15 @@ function capitalize(text) {
 }
 
 function isString(obj) {
-    return typeof obj === 'string' || obj instanceof String;
+    return typeof obj === "string" || obj instanceof String;
 }
 
 function isFunction(obj) {
-    return typeof obj === 'function';
+    return typeof obj === "function";
 }
 
 function isArray(obj) {
-    return Object.prototype.toString.call(obj) === '[object Array]';
+    return Object.prototype.toString.call(obj) === "[object Array]";
 }
 
 // Returns true if `obj` is object as in {a: 1, b: 2}, not if it's function or
@@ -99,7 +99,7 @@ function isObject(obj) {
     }
 
     var type = typeof obj;
-    return type === 'object' && !!obj;
+    return type === "object" && !!obj;
 }
 
 function forEachObject(object, callback) {
@@ -133,5 +133,5 @@ module.exports = {
     isObject: isObject,
     forEachObject: forEachObject,
     floatEquals: floatEquals,
-    removeChildren: removeChildren
+    removeChildren: removeChildren,
 };
