@@ -49,14 +49,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kimmobrunfeldt/progressbar.js.git"
+    "url": "git://github.com/anmol-godiyal/progressbar.js.git"
   },
-  "author": "Kimmo Brunfeldt <kimmobrunfeldt@gmail.com> (http://kimmobrunfeldt.github.io/)",
-  "license": "MIT",
+  "author": "Anmol Godiyal",
   "bugs": {
-    "url": "https://github.com/kimmobrunfeldt/progressbar.js/issues"
+    "url": "https://github.com/anmol-godiyal/progressbar.js"
   },
-  "homepage": "https://kimmobrunfeldt.github.io/progressbar.js/",
   "keywords": [
     "progress",
     "bar",
